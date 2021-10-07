@@ -43,6 +43,7 @@ impl PamHooks for PamTailscale {
             .collect();
 
         let user = pam_try!(pamh.get_user(None));
+        let rhost = pam_try!(pamh.get_item::<pam::items::PamRHost>());
 
         let cfg = tailpam::Config {
             user,

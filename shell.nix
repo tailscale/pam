@@ -10,7 +10,6 @@ pkgs.mkShell {
 
     # system deps
     pkg-config
-    openssl
   ];
 
   PAM_USER = "xe";

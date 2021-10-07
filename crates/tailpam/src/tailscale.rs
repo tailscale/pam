@@ -57,7 +57,7 @@ pub struct Status {
 }
 
 impl Status {
-    pub fn get() -> anyhow::Result<Self> {
+    pub fn get() -> super::Result<Self> {
         let mut easy = Easy2::new(Collector(Vec::new()));
         easy.url("http://foo/localapi/v0/status")?;
         easy.unix_socket("/var/run/tailscale/tailscaled.sock")?;

@@ -1,0 +1,15 @@
+[package]
+name = "pam_tailscale"
+version = "0.1.0"
+authors = ["Christine Dodrill <xe@tailscale.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "pam_tailscale"
+crate-type = [ "cdylib" ]
+
+[dependencies]
+pam = { git = "https://github.com/anowell/pam-rs" }
+tailpam = { path = "../../crates/tailpam" }

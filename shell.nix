@@ -10,8 +10,6 @@ pkgs.mkShell {
 
     # system deps
     pkg-config
+    pam
   ];
-
-  PAM_USER = "xe";
-  PAM_RHOST = "100.127.23.80";
 }

@@ -1,11 +1,14 @@
 #[macro_use]
 extern crate pam;
 
+mod rhost;
+
 use pam::constants::{PamFlag, PamResultCode};
 use pam::module::{PamHandle, PamHooks};
 use std::collections::HashMap;
+use std::convert::TryInto;
 use std::ffi::CStr;
-use std::net::{IpAddr, Ipv4Addr};
+use std::net::IpAddr;
 
 macro_rules! pam_try {
     ($e:expr) => {
@@ -43,12 +46,11 @@ impl PamHooks for PamTailscale {
             .collect();
 
         let user = pam_try!(pamh.get_user(None));
-        let rhost = pam_try!(pamh.get_item::<pam::items::PamRHost>());
+        let rhost = pam_try!(pamh.get_item::<rhost::RHost>());
+        let rhost: String = pam_try!(rhost.try_into(), PamResultCode::PAM_AUTH_ERR);
+        let rhost: IpAddr = pam_try!(rhost.parse(), PamResultCode::PAM_AUTHTOK_ERR);
 
-        let cfg = tailpam::Config {
-            user,
-            rhost: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
-        };
+        let cfg = tailpam::Config { user, rhost };
 
         match tailpam::auth(cfg) {
             Ok(_) => PamResultCode::PAM_SUCCESS,

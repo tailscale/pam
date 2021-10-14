@@ -153,20 +153,20 @@ pub mod callbacks {
 
     #[no_mangle]
     pub extern "C" fn pam_sm_acct_mgmt(
-        pamh: PamHandleT,
-        flags: PamFlags,
-        argc: c_int,
-        argv: *const *const c_char,
+        _: PamHandleT,
+        _: PamFlags,
+        _: c_int,
+        _: *const *const c_char,
     ) -> PamResultCode {
         PamResultCode::PAM_IGNORE
     }
 
     #[no_mangle]
     pub extern "C" fn pam_sm_authenticate(
-        _: PamHandleT,
-        _: PamFlags,
-        _: c_int,
-        _: *const *const c_char,
+        pamh: PamHandleT,
+        flags: PamFlags,
+        argc: c_int,
+        argv: *const *const c_char,
     ) -> PamResultCode {
         let args = extract_argv(argc, argv);
         let silent = (flags & PAM_SILENT) != 0;

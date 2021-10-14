@@ -11,5 +11,4 @@ name = "pam_tailscale"
 crate-type = [ "cdylib" ]
 
 [dependencies]
-pam = { git = "https://github.com/anowell/pam-rs" }
 tailpam = { path = "../../crates/tailpam" }

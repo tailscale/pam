@@ -15,7 +15,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaa3b8db7f3341ddef15786d250106334d4a6c4b0ae4a46cd77082777d9849b9"
 dependencies = [
  "curl-sys",
- "libc 0.2.103",
+ "libc",
  "schannel",
  "socket2",
  "winapi",
@@ -28,7 +28,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e0f44960aea24a786a46907b8824ebc0e66ca06bf4e4978408c7499620343483"
 dependencies = [
  "cc",
- "libc 0.2.103",
+ "libc",
  "libz-sys",
  "pkg-config",
  "vcpkg",
@@ -58,12 +58,6 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.1.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e32a70cf75e5846d53a673923498228bbec6a8624708a9ea5645f075d6276122"
-
-[[package]]
-name = "libc"
 version = "0.2.103"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd8f7255a17a627354f321ef0055d63b898c6fb27eff628af4d1b66b7331edf6"
@@ -75,24 +69,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "de5435b8549c16d423ed0c03dbaafe57cf6c3344744f1242520d59c9d8ecec66"
 dependencies = [
  "cc",
- "libc 0.2.103",
+ "libc",
  "pkg-config",
  "vcpkg",
-]
-
-[[package]]
-name = "pam"
-version = "0.1.0"
-source = "git+https://github.com/anowell/pam-rs#4bb68d314deadee0985c2f4f12cc952e5e17cd1e"
-dependencies = [
- "libc 0.1.12",
 ]
 
 [[package]]
 name = "pam_tailscale"
 version = "0.1.0"
 dependencies = [
- "pam",
  "tailpam",
 ]
 
@@ -173,7 +158,7 @@ version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5dc90fe6c7be1a323296982db1836d1ea9e47b6839496dde9a541bc496df3516"
 dependencies = [
- "libc 0.2.103",
+ "libc",
  "winapi",
 ]
 

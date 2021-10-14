@@ -148,7 +148,7 @@ pub enum PamResultCode {
 }
 
 pub mod callbacks {
-    use super::super::acct_mgmt;
+    use super::super::authenticate;
     use super::*;
 
     #[no_mangle]
@@ -158,9 +158,7 @@ pub mod callbacks {
         argc: c_int,
         argv: *const *const c_char,
     ) -> PamResultCode {
-        let args = extract_argv(argc, argv);
-        let silent = (flags & PAM_SILENT) != 0;
-        acct_mgmt(pamh, args, silent)
+        PamResultCode::PAM_IGNORE
     }
 
     #[no_mangle]
@@ -170,7 +168,9 @@ pub mod callbacks {
         _: c_int,
         _: *const *const c_char,
     ) -> PamResultCode {
-        PamResultCode::PAM_IGNORE
+        let args = extract_argv(argc, argv);
+        let silent = (flags & PAM_SILENT) != 0;
+        authenticate(pamh, args, silent)
     }
 
     #[no_mangle]

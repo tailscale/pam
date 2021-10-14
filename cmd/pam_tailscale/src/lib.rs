@@ -49,7 +49,7 @@ fn syslog() {
     }
 }
 
-pub fn acct_mgmt(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {
+pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {
     syslog();
 
     let user = pam_try!(get_user(pamh));

@@ -1,7 +1,11 @@
+#[macro_use]
+extern crate log;
+
 mod pam;
 
 use std::convert::TryInto;
 use std::net::IpAddr;
+use syslog::{Facility, Formatter3164};
 
 pub use pam::{callbacks::*, set_user};
 use pam::{get_rhost, get_user, PamResultCode};
@@ -10,18 +14,39 @@ macro_rules! pam_try {
     ($e:expr) => {
         match $e {
             Ok(v) => v,
-            Err(e) => return e,
+            Err(e) => {
+                ::log::error!("{:?}", e);
+                return e;
+            }
         }
     };
     ($e:expr, $err:expr) => {
         match $e {
             Ok(v) => v,
             Err(e) => {
-                println!("Error: {}", e);
+                ::log::error!("{:?}", e);
                 return $err;
             }
         }
     };
+}
+
+fn main() {
+    let formatter = Formatter3164 {
+        facility: Facility::LOG_USER,
+        hostname: None,
+        process: "myprogram".into(),
+        pid: 0,
+    };
+
+    match syslog::unix(formatter) {
+        Err(e) => println!("impossible to connect to syslog: {:?}", e),
+        Ok(mut writer) => {
+            writer
+                .err("hello world")
+                .expect("could not write error message");
+        }
+    }
 }
 
 pub fn acct_mgmt(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {

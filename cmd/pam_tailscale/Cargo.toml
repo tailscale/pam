@@ -11,4 +11,6 @@ name = "pam_tailscale"
 crate-type = [ "cdylib" ]
 
 [dependencies]
+log = "0.4"
+syslog = "5.0"
 tailpam = { path = "../../crates/tailpam" }

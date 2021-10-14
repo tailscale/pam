@@ -11,3 +11,15 @@ This code is unaudited, not fully tested and is not known to be secure. This is
 currently a proof of concept and is not made with the intent to be used yet.
 
 Enjoy this preview into the future of auth.
+
+## Installation Instructions
+
+1. Install Rust through your favorite method (most of the time you can probably
+   get away with using [rustup](https://rustup.rs/))
+1. Clone this repo and run `cargo build --release`
+1. Copy `./target/release/libpam_tailscale.so` to
+   `/lib/security/pam_tailscale.so` (or wherever your distro of choice puts
+   these things)
+1. Add the following to the base login path for your distro's PAM configuration:
+   `auth    sufficient      pam_tailscale.so`
+1. SSH into your machine as normal

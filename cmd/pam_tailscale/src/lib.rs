@@ -31,7 +31,7 @@ macro_rules! pam_try {
     };
 }
 
-fn main() {
+fn syslog() {
     let formatter = Formatter3164 {
         facility: Facility::LOG_USER,
         hostname: None,
@@ -50,6 +50,8 @@ fn main() {
 }
 
 pub fn acct_mgmt(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {
+    syslog();
+
     let user = pam_try!(get_user(pamh));
     let rhost = pam_try!(get_rhost(pamh));
     let rhost: String = pam_try!(rhost.try_into(), PamResultCode::PAM_AUTH_ERR);

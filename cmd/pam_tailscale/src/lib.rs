@@ -1,11 +1,7 @@
-#[macro_use]
-extern crate log;
-
 mod pam;
 
 use std::convert::TryInto;
 use std::net::IpAddr;
-use syslog::{Facility, Formatter3164};
 
 pub use pam::{callbacks::*, set_user};
 use pam::{get_rhost, get_user, PamResultCode};
@@ -31,27 +27,7 @@ macro_rules! pam_try {
     };
 }
 
-fn syslog() {
-    let formatter = Formatter3164 {
-        facility: Facility::LOG_USER,
-        hostname: None,
-        process: "myprogram".into(),
-        pid: 0,
-    };
-
-    match syslog::unix(formatter) {
-        Err(e) => println!("impossible to connect to syslog: {:?}", e),
-        Ok(mut writer) => {
-            writer
-                .err("hello world")
-                .expect("could not write error message");
-        }
-    }
-}
-
 pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {
-    syslog();
-
     let user = pam_try!(get_user(pamh));
     let rhost = pam_try!(get_rhost(pamh));
     let rhost: String = pam_try!(rhost.try_into(), PamResultCode::PAM_AUTH_ERR);

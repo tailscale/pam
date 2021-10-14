@@ -8,6 +8,12 @@ pub type PamResult<T> = Result<T, PamResultCode>;
 
 pub const PAM_SILENT: PamFlags = 0x8000;
 
+/// Gets the username that is currently authenticating out of the pam handle.
+///
+/// # Safety
+///
+/// This casts the string directly from C space into Rust space. It relies on
+/// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
 pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
     get_item(pamh, PamItemType::PAM_USER).map(|u| unsafe {
         CStr::from_ptr(u as *const i8)
@@ -16,6 +22,12 @@ pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
     })
 }
 
+/// Gets the remote host out of the pam handle.
+///
+/// # Safety
+///
+/// This casts the string directly from C space into Rust space. It relies on
+/// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
 pub fn get_rhost(pamh: PamHandleT) -> PamResult<String> {
     get_item(pamh, PamItemType::PAM_RHOST).map(|u| unsafe {
         CStr::from_ptr(u as *const i8)
@@ -65,12 +77,11 @@ fn extract_argv(argc: c_int, argv: *const *const c_char) -> Vec<String> {
 #[test]
 fn test_extract_argv() {
     let argc: c_int = 3;
-    let argv: *const *const c_char = [
-        CString::new("one").unwrap().as_ptr(),
-        CString::new("two").unwrap().as_ptr(),
-        CString::new("three").unwrap().as_ptr(),
-    ]
-    .as_ptr();
+    let one = CString::new("one").unwrap();
+    let two = CString::new("two").unwrap();
+    let three = CString::new("three").unwrap();
+
+    let argv: *const *const c_char = [one.as_ptr(), two.as_ptr(), three.as_ptr()].as_ptr();
     let expected = vec![
         String::from("one"),
         String::from("two"),

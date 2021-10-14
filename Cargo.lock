@@ -103,7 +103,6 @@ name = "pam_tailscale"
 version = "0.1.0"
 dependencies = [
  "log",
- "syslog",
  "tailpam",
 ]
 
@@ -216,8 +215,10 @@ name = "tailpam"
 version = "0.1.0"
 dependencies = [
  "curl",
+ "log",
  "serde",
  "serde_json",
+ "syslog",
  "thiserror",
 ]
 

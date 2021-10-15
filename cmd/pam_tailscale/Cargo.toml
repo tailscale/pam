@@ -3,6 +3,7 @@ name = "pam_tailscale"
 version = "0.1.0"
 authors = ["Christine Dodrill <xe@tailscale.com>"]
 edition = "2018"
+description = "PAM module for Tailscale authentication"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,3 +14,14 @@ crate-type = [ "cdylib" ]
 [dependencies]
 log = "0.4"
 tailpam = { path = "../../crates/tailpam" }
+
+[package.metadata.deb]
+maintainer = "Christine Dodrill <xe@tailscale.com>"
+copyright = "2021, Tailscale Inc. <support@tailscale.com>"
+license-file = [ "../../LICENSE", "4" ]
+depends = "$auto"
+section = "security"
+priority = "optional"
+assets = [
+  [ "target/release/libpam_tailscale.so", "lib/security/pam_tailscale.so", "755" ]
+]

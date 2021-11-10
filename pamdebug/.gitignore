@@ -1,0 +1,3 @@
+pam_test
+*.o
+*.so

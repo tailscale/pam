@@ -23,5 +23,6 @@ depends = "$auto"
 section = "security"
 priority = "optional"
 assets = [
+  [ "target/release/libpam_tailscale.so", "lib/security/pam_tailscale.so", "755" ],
   [ "target/release/libpam_tailscale.so", "lib/x86_64-linux-gnu/security/pam_tailscale.so", "755" ]
 ]

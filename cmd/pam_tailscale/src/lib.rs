@@ -28,17 +28,26 @@ macro_rules! pam_try {
 }
 
 pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {
+    tailpam::syslog();
+
     let user = pam_try!(get_user(pamh));
     let rhost = pam_try!(get_rhost(pamh));
-    let rhost: String = pam_try!(rhost.try_into(), PamResultCode::PAM_AUTH_ERR);
-    let rhost: IpAddr = pam_try!(rhost.parse(), PamResultCode::PAM_AUTHTOK_ERR);
+    let raw_host: String = pam_try!(rhost.try_into(), PamResultCode::PAM_AUTH_ERR);
+    let mut rhost: Result<IpAddr, std::io::Error> = raw_host
+        .parse()
+        .map_err(|x| std::io::Error::new(std::io::ErrorKind::Other, x))
+        .into();
+    if rhost.is_err() {
+        rhost = dns_lookup::lookup_host(&raw_host).map(|x| x[0]).into();
+    }
+    let rhost: IpAddr = pam_try!(rhost, PamResultCode::PAM_AUTHTOK_ERR);
 
     let cfg = tailpam::Config { user, rhost };
 
     match tailpam::auth(cfg) {
         Ok(_) => PamResultCode::PAM_SUCCESS,
         Err(why) => {
-            println!("can't auth: {}", why);
+            log::error!("can't auth: {}", why);
             PamResultCode::PAM_AUTH_ERR
         }
     }

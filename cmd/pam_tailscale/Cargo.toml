@@ -12,6 +12,7 @@ name = "pam_tailscale"
 crate-type = [ "cdylib" ]
 
 [dependencies]
+dns-lookup = "1"
 log = "0.4"
 tailpam = { path = "../../crates/tailpam" }
 

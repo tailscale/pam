@@ -27,7 +27,7 @@ pub enum Error {
 
 pub type Result<T = ()> = std::result::Result<T, Error>;
 
-fn syslog() {
+pub fn syslog() {
     let formatter = Formatter3164 {
         facility: Facility::LOG_USER,
         hostname: None,

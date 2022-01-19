@@ -265,7 +265,7 @@ pub struct Hostinfo {
     #[serde(rename = "Hostname")]
     pub hostname: String,
     #[serde(rename = "RoutableIPs")]
-    pub routable_ips: Vec<String>,
+    pub routable_ips: Option<Vec<String>>,
     #[serde(rename = "Services")]
     pub services: Vec<Service>,
 }

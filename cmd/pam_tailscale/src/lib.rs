@@ -45,7 +45,17 @@ pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) ->
     let cfg = tailpam::Config { user, rhost };
 
     match tailpam::auth(cfg) {
-        Ok(_) => PamResultCode::PAM_SUCCESS,
+        Ok(who) => {
+            pam::info(
+                pamh,
+                format!(
+                    "Welcome {}, you were authenticated using your Tailscale identity.\n\n",
+                    who.user_profile.display_name
+                ),
+            )
+            .unwrap();
+            PamResultCode::PAM_SUCCESS
+        }
         Err(why) => {
             log::error!("can't auth: {}", why);
             PamResultCode::PAM_AUTH_ERR

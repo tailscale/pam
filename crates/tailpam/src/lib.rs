@@ -54,7 +54,10 @@ pub fn auth(cfg: Config) -> Result<WhoisResponse> {
 
     let _status = tailscale::Status::get()?;
 
-    let result = tailscale::WhoisResponse::get(addr).map_err(|_| Error::UnknownIP(addr.ip()))?;
+    let result = tailscale::WhoisResponse::get(addr).map_err(|err| {
+        log::error!("can't get whois response: {}", err);
+        Error::UnknownIP(addr.ip())
+    })?;
 
     Ok(result)
 }

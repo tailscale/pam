@@ -111,7 +111,7 @@ pub struct Peer {
     pub user_id: u64,
 
     #[serde(rename = "TailAddr")]
-    tail_addr: IpAddr,
+    tail_addr: Option<IpAddr>,
 
     #[serde(rename = "TailscaleIPs")]
     pub tailscale_ips: Vec<IpAddr>,

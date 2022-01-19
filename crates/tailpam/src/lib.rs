@@ -1,6 +1,7 @@
 use log::LevelFilter;
-use std::net::IpAddr;
+use std::net::{IpAddr, SocketAddr};
 use syslog::{BasicLogger, Facility, Formatter3164};
+use tailscale::WhoisResponse;
 
 pub mod tailscale;
 
@@ -23,6 +24,9 @@ pub enum Error {
 
     #[error("json error: {0}")]
     Json(#[from] serde_json::Error),
+
+    #[error("url parse error: {0}")]
+    URLParse(#[from] url::ParseError),
 }
 
 pub type Result<T = ()> = std::result::Result<T, Error>;
@@ -45,25 +49,12 @@ pub fn syslog() {
     }
 }
 
-pub fn auth(cfg: Config) -> Result {
-    syslog();
-    let mut status = tailscale::Status::get()?;
+pub fn auth(cfg: Config) -> Result<WhoisResponse> {
+    let addr = SocketAddr::new(cfg.rhost, 0);
 
-    // It's probably okay to trust yourself
-    status
-        .peer
-        .insert(status.myself.public_key.clone(), status.myself.clone());
+    let _status = tailscale::Status::get()?;
 
-    for (_, peer) in &status.peer {
-        for ip in &peer.tailscale_ips {
-            if &cfg.rhost == ip {
-                if let Some(user) = status.get_peer_user(peer.user_id) {
-                    log::info!("{} is authing as {}", user.login_name, cfg.user);
-                    return Ok(());
-                }
-            }
-        }
-    }
+    let result = tailscale::WhoisResponse::get(addr).map_err(|_| Error::UnknownIP(addr.ip()))?;
 
-    Err(Error::UnknownIP(cfg.rhost))
+    Ok(result)
 }

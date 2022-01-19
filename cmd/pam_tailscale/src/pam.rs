@@ -1,6 +1,8 @@
 use std::ffi::{CStr, CString};
-use std::os::raw::{c_char, c_int, c_uint, c_void};
-use std::ptr;
+use std::{
+    os::raw::{c_char, c_int, c_uint, c_void},
+    ptr,
+};
 
 pub type PamHandleT = *const c_uint;
 pub type PamFlags = c_uint;
@@ -74,6 +76,20 @@ fn extract_argv(argc: c_int, argv: *const *const c_char) -> Vec<String> {
         .collect()
 }
 
+/// Sends a message to the user when doing a PAM conversation.
+///
+/// This function assumes the input string has no null bytes in it.
+/// Including null bytes will cause a panic.
+pub fn info(pamh: PamHandleT, msg: String) -> PamResult<()> {
+    let msg = CString::new(msg).expect("don't include a null byte");
+    let result_code = unsafe { pam_info(pamh, msg.as_ptr()) };
+
+    match result_code {
+        PamResultCode::PAM_SUCCESS => Ok(()),
+        _ => Err(result_code),
+    }
+}
+
 #[test]
 fn test_extract_argv() {
     let argc: c_int = 3;
@@ -92,6 +108,7 @@ fn test_extract_argv() {
 
 #[link(name = "pam")]
 extern "C" {
+    fn pam_info(pamh: PamHandleT, fmt: *const c_char, ...) -> PamResultCode;
     fn pam_set_item(pamh: PamHandleT, item_type: PamItemType, item: *const c_void)
         -> PamResultCode;
     fn pam_get_item(

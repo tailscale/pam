@@ -248,9 +248,9 @@ pub struct WhoisPeer {
     #[serde(rename = "PrimaryRoutes")]
     pub primary_routes: Option<Vec<String>>,
     #[serde(rename = "MachineAuthorized")]
-    pub machine_authorized: bool,
+    pub machine_authorized: Option<bool>,
     #[serde(rename = "Capabilities")]
-    pub capabilities: Vec<String>,
+    pub capabilities: Option<Vec<String>>,
     #[serde(rename = "ComputedName")]
     pub computed_name: String,
     #[serde(rename = "ComputedNameWithHost")]

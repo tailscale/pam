@@ -16,6 +16,9 @@ pub enum Error {
     #[error("unknown IP {0}")]
     UnknownIP(IpAddr),
 
+    #[error("not your machine, {0}")]
+    NotYourMachine(String),
+
     #[error("bad HTTP status: {0}")]
     HTTPStatus(#[from] tailscale::StatusError),
 
@@ -52,12 +55,18 @@ pub fn syslog() {
 pub fn auth(cfg: Config) -> Result<WhoisResponse> {
     let addr = SocketAddr::new(cfg.rhost, 0);
 
-    let _status = tailscale::Status::get()?;
+    let status = tailscale::Status::get()?;
 
     let result = tailscale::WhoisResponse::get(addr).map_err(|err| {
         log::error!("can't get whois response: {}", err);
         Error::UnknownIP(addr.ip())
     })?;
+
+    if result.user_profile.id != status.myself.user_id {
+        return Err(Error::NotYourMachine(
+            result.user_profile.display_name.clone(),
+        ));
+    }
 
     Ok(result)
 }

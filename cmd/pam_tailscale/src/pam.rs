@@ -82,7 +82,14 @@ fn extract_argv(argc: c_int, argv: *const *const c_char) -> Vec<String> {
 /// Including null bytes will cause a panic.
 pub fn info(pamh: PamHandleT, msg: String) -> PamResult<()> {
     let msg = CString::new(msg).expect("don't include a null byte");
-    let result_code = unsafe { pam_info(pamh, msg.as_ptr()) };
+    let result_code = unsafe {
+        pam_prompt(
+            pamh,
+            MessageStyle::PAM_TEXT_INFO,
+            ptr::null::<*mut c_char>(),
+            msg.as_ptr(),
+        )
+    };
 
     match result_code {
         PamResultCode::PAM_SUCCESS => Ok(()),
@@ -108,7 +115,13 @@ fn test_extract_argv() {
 
 #[link(name = "pam")]
 extern "C" {
-    fn pam_info(pamh: PamHandleT, fmt: *const c_char, ...) -> PamResultCode;
+    fn pam_prompt(
+        pamh: PamHandleT,
+        msg_type: MessageStyle,
+        response: *const *mut c_char,
+        fmt: *const c_char,
+        ...
+    ) -> PamResultCode;
     fn pam_set_item(pamh: PamHandleT, item_type: PamItemType, item: *const c_void)
         -> PamResultCode;
     fn pam_get_item(
@@ -116,6 +129,16 @@ extern "C" {
         item_type: PamItemType,
         item: *mut *const c_void,
     ) -> PamResultCode;
+}
+
+#[allow(non_camel_case_types, dead_code)]
+#[derive(Debug)]
+#[repr(C)]
+pub enum MessageStyle {
+    PAM_PROMPT_ECHO_OFF = 1,
+    PAM_PROMPT_ECHO_ON = 2,
+    PAM_ERROR_MSG = 3,
+    PAM_TEXT_INFO = 4,
 }
 
 #[allow(non_camel_case_types, dead_code)]

@@ -6,33 +6,18 @@ use std::net::IpAddr;
 pub use pam::{callbacks::*, set_user};
 use pam::{get_rhost, get_user, PamResultCode};
 
-macro_rules! pam_try {
-    ($e:expr) => {
-        match $e {
-            Ok(v) => v,
-            Err(e) => {
-                ::log::error!("{:?}", e);
-                return e;
-            }
-        }
-    };
-    ($e:expr, $err:expr) => {
-        match $e {
-            Ok(v) => v,
-            Err(e) => {
-                ::log::error!("{:?}", e);
-                return $err;
-            }
-        }
-    };
-}
-
-pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) -> PamResultCode {
+pub fn authenticate(
+    pamh: pam::PamHandleT,
+    _args: Vec<String>,
+    _silent: bool,
+) -> pam::PamResult<()> {
     tailpam::syslog();
 
-    let user = pam_try!(get_user(pamh));
-    let rhost = pam_try!(get_rhost(pamh));
-    let raw_host: String = pam_try!(rhost.try_into(), PamResultCode::PAM_AUTH_ERR);
+    let user = get_user(pamh)?;
+    let rhost = get_rhost(pamh)?;
+    let raw_host: String = rhost
+        .try_into()
+        .map_err(|_| pam::PamResultCode::PAM_AUTH_ERR)?;
     let mut rhost: Result<IpAddr, std::io::Error> = raw_host
         .parse()
         .map_err(|x| std::io::Error::new(std::io::ErrorKind::Other, x))
@@ -40,7 +25,10 @@ pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) ->
     if rhost.is_err() {
         rhost = dns_lookup::lookup_host(&raw_host).map(|x| x[0]).into();
     }
-    let rhost: IpAddr = pam_try!(rhost, PamResultCode::PAM_AUTHTOK_ERR);
+    let rhost: IpAddr = rhost.map_err(|why| {
+        log::error!("error getting rhost: {}", why);
+        pam::PamResultCode::PAM_AUTH_ERR
+    })?;
 
     let cfg = tailpam::Config { user, rhost };
 
@@ -52,13 +40,12 @@ pub fn authenticate(pamh: pam::PamHandleT, _args: Vec<String>, _silent: bool) ->
                     "Welcome {}, you were authenticated using your Tailscale identity.\n\n",
                     who.user_profile.display_name
                 ),
-            )
-            .unwrap();
-            PamResultCode::PAM_SUCCESS
+            )?;
+            Ok(())
         }
         Err(why) => {
             log::error!("can't auth: {}", why);
-            PamResultCode::PAM_AUTH_ERR
+            Err(PamResultCode::PAM_AUTH_ERR)
         }
     }
 }

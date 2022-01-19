@@ -198,7 +198,10 @@ pub mod callbacks {
     ) -> PamResultCode {
         let args = extract_argv(argc, argv);
         let silent = (flags & PAM_SILENT) != 0;
-        authenticate(pamh, args, silent)
+        match authenticate(pamh, args, silent) {
+            Ok(_) => PamResultCode::PAM_SUCCESS,
+            Err(code) => code,
+        }
     }
 
     #[no_mangle]
@@ -210,7 +213,10 @@ pub mod callbacks {
     ) -> PamResultCode {
         let args = extract_argv(argc, argv);
         let silent = (flags & PAM_SILENT) != 0;
-        authenticate(pamh, args, silent)
+        match authenticate(pamh, args, silent) {
+            Ok(_) => PamResultCode::PAM_SUCCESS,
+            Err(code) => code,
+        }
     }
 
     #[no_mangle]

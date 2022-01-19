@@ -1,6 +1,6 @@
 Name: Tailscale Authentication
 Default: yes
-Priority: 0
+Priority: 512
 Auth-Type: Primary
 Auth:
         [success=end default=ignore]    pam_tailscale.so

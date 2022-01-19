@@ -186,12 +186,14 @@ pub mod callbacks {
 
     #[no_mangle]
     pub extern "C" fn pam_sm_chauthtok(
-        _: PamHandleT,
-        _: PamFlags,
-        _: c_int,
-        _: *const *const c_char,
+        pamh: PamHandleT,
+        flags: PamFlags,
+        argc: c_int,
+        argv: *const *const c_char,
     ) -> PamResultCode {
-        PamResultCode::PAM_IGNORE
+        let args = extract_argv(argc, argv);
+        let silent = (flags & PAM_SILENT) != 0;
+        authenticate(pamh, args, silent)
     }
 
     #[no_mangle]

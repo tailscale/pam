@@ -37,7 +37,7 @@ pub fn authenticate(
             pam::info(
                 pamh,
                 format!(
-                    "Welcome {}, you were authenticated using your Tailscale identity.\n\n",
+                    "Welcome {}, you were authenticated using your Tailscale identity.\n",
                     who.user_profile.display_name
                 ),
             )?;

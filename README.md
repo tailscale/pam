@@ -16,6 +16,7 @@ Enjoy this preview into the future of auth.
 
 1. Install Rust through your favorite method (most of the time you can probably
    get away with using [rustup](https://rustup.rs/))
+1. On Ubuntu run this command: `sudo apt-get install build-essential git libpam0g-dev`
 1. Clone this repo and run `cargo build --release`
 1. Copy `./target/release/libpam_tailscale.so` to
    `/lib/security/pam_tailscale.so` (or wherever your distro of choice puts

@@ -3,3 +3,17 @@
 set -eu
 
 pam-auth-update --package --enable tailscale
+
+if ! grep -q '^ChallengeResponseAuthentication.*yes' /etc/ssh/sshd_config
+then
+    cat <<EOF
+Because of design limitations of sshd, you need to set the following in your sshd
+config file at /etc/ssh/sshd_config:
+
+    ChallengeResponseAuthentication yes
+
+Then reload sshd:
+
+    sudo systemctl reload sshd
+EOF
+fi

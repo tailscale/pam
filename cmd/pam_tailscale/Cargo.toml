@@ -1,7 +1,8 @@
 [package]
 name = "pam_tailscale"
 version = "0.1.0"
-authors = ["Christine Dodrill <xe@tailscale.com>"]
+authors = ["Xe Iaso <xe@tailscale.com>"]
+license = "bsd-3"
 edition = "2018"
 description = "PAM module for Tailscale authentication"
 
@@ -17,12 +18,13 @@ log = "0.4"
 tailpam = { path = "../../crates/tailpam" }
 
 [package.metadata.deb]
-maintainer = "Christine Dodrill <xe@tailscale.com>"
-copyright = "2021, Tailscale Inc. <support@tailscale.com>"
+maintainer = "Xe Iaso <xe@tailscale.com>"
+copyright = "2022, Tailscale Inc. <support@tailscale.com>"
 license-file = [ "../../LICENSE", "4" ]
 depends = "$auto"
 section = "security"
 priority = "optional"
+maintainer-scripts = "./debian"
 assets = [
   [ "target/release/libpam_tailscale.so", "lib/security/pam_tailscale.so", "755" ],
   [ "target/release/libpam_tailscale.so", "lib/x86_64-linux-gnu/security/pam_tailscale.so", "755" ],

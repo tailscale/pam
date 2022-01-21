@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eu
+
+pam-auth-update --package --enable tailscale

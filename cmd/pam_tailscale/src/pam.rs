@@ -18,7 +18,7 @@ pub const PAM_SILENT: PamFlags = 0x8000;
 /// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
 pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
     get_item(pamh, PamItemType::PAM_USER).map(|u| unsafe {
-        CStr::from_ptr(u as *const i8)
+        CStr::from_ptr(u as *const u8)
             .to_string_lossy()
             .into_owned()
     })
@@ -32,7 +32,7 @@ pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
 /// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
 pub fn get_rhost(pamh: PamHandleT) -> PamResult<String> {
     get_item(pamh, PamItemType::PAM_RHOST).map(|u| unsafe {
-        CStr::from_ptr(u as *const i8)
+        CStr::from_ptr(u as *const u8)
             .to_string_lossy()
             .into_owned()
     })

@@ -16,8 +16,39 @@ pub const PAM_SILENT: PamFlags = 0x8000;
 ///
 /// This casts the string directly from C space into Rust space. It relies on
 /// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
+#[cfg(target_arch = "aarch64")]
 pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
     get_item(pamh, PamItemType::PAM_USER).map(|u| unsafe {
+        CStr::from_ptr(u as *const u8)
+            .to_string_lossy()
+            .into_owned()
+    })
+}
+
+/// Gets the username that is currently authenticating out of the pam handle.
+///
+/// # Safety
+///
+/// This casts the string directly from C space into Rust space. It relies on
+/// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
+#[cfg(not(target_arch = "aarch64"))]
+pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
+    get_item(pamh, PamItemType::PAM_USER).map(|u| unsafe {
+        CStr::from_ptr(u as *const i8)
+            .to_string_lossy()
+            .into_owned()
+    })
+}
+
+/// Gets the remote host out of the pam handle.
+///
+/// # Safety
+///
+/// This casts the string directly from C space into Rust space. It relies on
+/// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
+#[cfg(target_arch = "aarch64")]
+pub fn get_rhost(pamh: PamHandleT) -> PamResult<String> {
+    get_item(pamh, PamItemType::PAM_RHOST).map(|u| unsafe {
         CStr::from_ptr(u as *const u8)
             .to_string_lossy()
             .into_owned()
@@ -30,9 +61,10 @@ pub fn get_user(pamh: PamHandleT) -> PamResult<String> {
 ///
 /// This casts the string directly from C space into Rust space. It relies on
 /// PAM doing things properly. Invalid UTF-8 will be pruned from the result.
+#[cfg(not(target_arch = "aarch64"))]
 pub fn get_rhost(pamh: PamHandleT) -> PamResult<String> {
     get_item(pamh, PamItemType::PAM_RHOST).map(|u| unsafe {
-        CStr::from_ptr(u as *const u8)
+        CStr::from_ptr(u as *const i8)
             .to_string_lossy()
             .into_owned()
     })

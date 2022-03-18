@@ -53,7 +53,7 @@ pub struct Status {
     magic_dns_suffix: String,
 
     #[serde(rename = "CertDomains")]
-    cert_domains: Vec<String>,
+    cert_domains: Option<Vec<String>>,
 
     #[serde(rename = "Peer")]
     pub peer: HashMap<String, Peer>,

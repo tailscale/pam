@@ -1,5 +1,7 @@
 # Experimental Tailscale PAM Module
 
+[![status: experimental](https://img.shields.io/badge/status-experimental-blue)](https://tailscale.com/kb/1167/release-stages/#experimental)
+
 This is a very very experimental Tailscale
 [PAM](https://en.wikipedia.org/wiki/Linux_PAM) module that allows you to SSH
 using your Tailscale credentials. This is a response to
